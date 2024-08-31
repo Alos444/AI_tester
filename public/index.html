@@ -1,0 +1,123 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Facts and Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #locationForm {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #locationForm input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        #locationForm button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #locationForm button:hover {
+            background-color: #218838;
+        }
+        #result {
+            display: flex;
+            justify-content: center;
+        }
+        .card {
+            background-color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #444;
+        }
+        .card ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .card p {
+            line-height: 1.6;
+            color: #555;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interesting Facts and Events</h1>
+    <form id="locationForm">
+        <label for="location">What are you interested in?</label>
+        <input type="text" id="location" name="location" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="result"></div>
+    <div class="error" id="error"></div>
+
+    <script>
+        document.getElementById('locationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const location = document.getElementById('location').value;
+            
+            fetch('/locationInfo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ location })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('error').textContent = data.error;
+                    document.getElementById('result').innerHTML = '';
+                } else {
+                    document.getElementById('error').textContent = '';
+                    document.getElementById('result').innerHTML = `
+                        <div class="card">
+                            <h2>Information about ${data.location}</h2>
+                            <ul>
+                                ${data.factsAndEvents.split("*").map(fact => fact.trim()).filter(fact => fact).map(fact => `<li>${fact}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error').textContent = 'Error fetching data. Please try again later.';
+                document.getElementById('result').innerHTML = '';
+            });
+        });
+    </script>
+</body>
+</html>
