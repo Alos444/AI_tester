@@ -1,3 +1,5 @@
+## AI_TESTER
+
 In this project, I was working to build a web application that retrieves and displays interesting facts and recent events about any location using Google's Generative AI.
 
 ## Backend Development:
